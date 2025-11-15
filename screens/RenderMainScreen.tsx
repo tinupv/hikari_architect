@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import { BatchJob, ImageFile, Screen, Settings } from '../types';
-import { Accordion, ActionButton, IconButton, Select, SettingButton, SettingItemWithTooltip, Slider, Spinner } from '../components/ui';
+import { Accordion, ActionButton, IconButton, Select, SettingButton, SettingItemWithTooltip, Slider, Spinner, TooltipWrapper } from '../components/ui';
 import { BuildingIcon, DownloadIcon, RedoIcon, SparklesIcon, UndoIcon, SaveIcon, XIcon, PlusIcon, InfoIcon } from '../components/icons';
 import { usePresets } from '../hooks/usePresets';
 
@@ -233,38 +233,56 @@ export const RenderMainScreen: React.FC<RenderMainScreenProps> = (props) => {
                     )}
                     </AnimatePresence>
 
-                     {props.currentRender && (
-                        <motion.div
-                            className="absolute bottom-4 left-1/2 -translate-x-1/2 w-[95%] max-w-4xl p-0.5 bg-gradient-to-r from-teal-400 to-blue-500 rounded-2xl shadow-lg"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.5, duration: 0.4 }}
-                        >
-                            <div className="flex items-center gap-2 p-2 bg-gray-50/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-[14px]">
-                                <input
-                                    type="text"
-                                    value={props.editPrompt}
-                                    onChange={(e) => props.setEditPrompt(e.target.value)}
-                                    placeholder="e.g., make the walls light blue"
-                                    className="flex-grow bg-gray-200/50 dark:bg-gray-900/50 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 transition text-gray-800 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400"
-                                    disabled={props.isLoading}
-                                />
-                                <div className="flex items-center gap-1">
-                                    <IconButton onClick={props.handleUndo} disabled={props.isLoading || !props.canUndo} aria-label="Undo">
-                                        <UndoIcon className="w-5 h-5" />
-                                    </IconButton>
-                                    <IconButton onClick={props.handleRedo} disabled={props.isLoading || !props.canRedo} aria-label="Redo">
-                                        <RedoIcon className="w-5 h-5" />
-                                    </IconButton>
-                                </div>
-                                <ActionButton onClick={props.handleEnhance} disabled={props.isLoading || !props.editPrompt} icon={<SparklesIcon className="w-5 h-5" />} label="Enhance" />
-                                <IconButton onClick={props.handleDownload} disabled={props.isLoading} aria-label="Download">
-                                    <DownloadIcon className="w-5 h-5" />
-                                </IconButton>
-                            </div>
-                        </motion.div>
+                    {props.currentRender && (
+                        <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
+                            <IconButton onClick={props.handleUndo} disabled={props.isLoading || !props.canUndo} aria-label="Undo">
+                                <UndoIcon className="w-5 h-5" />
+                            </IconButton>
+                            <IconButton onClick={props.handleRedo} disabled={props.isLoading || !props.canRedo} aria-label="Redo">
+                                <RedoIcon className="w-5 h-5" />
+                            </IconButton>
+                        </div>
                     )}
                 </div>
+
+                <AnimatePresence>
+                {props.currentRender && (
+                    <motion.div
+                        className="flex-shrink-0 pt-4 space-y-3"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <div className="relative">
+                            <input
+                                type="text"
+                                value={props.editPrompt}
+                                onChange={(e) => props.setEditPrompt(e.target.value)}
+                                placeholder="e.g., make the walls light blue"
+                                className="w-full bg-gray-200/50 dark:bg-gray-900/50 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 transition text-gray-800 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400"
+                                disabled={props.isLoading}
+                            />
+                        </div>
+                        <div className="flex justify-center items-center gap-3">
+                            <ActionButton
+                                onClick={props.handleEnhance}
+                                disabled={props.isLoading || !props.editPrompt}
+                                icon={<SparklesIcon className="w-4 h-4" />}
+                                label="Enhance"
+                                className="!px-4 !py-1.5 text-sm"
+                            />
+                            <IconButton
+                                onClick={props.handleDownload}
+                                disabled={props.isLoading}
+                                aria-label="Download"
+                            >
+                                <DownloadIcon className="w-5 h-5" />
+                            </IconButton>
+                        </div>
+                    </motion.div>
+                )}
+                </AnimatePresence>
             </div>
 
             {/* Right: Settings Panel */}
@@ -289,7 +307,10 @@ export const RenderMainScreen: React.FC<RenderMainScreenProps> = (props) => {
                                         className="flex items-center gap-3 bg-gray-100 dark:bg-gray-700/50 p-2 rounded-lg cursor-grab"
                                     >
                                         <img src={file.previewUrl} alt={`Style ref ${index}`} className="w-10 h-10 rounded-md object-cover flex-shrink-0" />
-                                        <div className="flex-grow">
+                                        <TooltipWrapper
+                                            tooltipText="Controls how much this style reference affects the final render. A value of 1.0 means full influence, while 0.0 means no influence."
+                                            className="flex-grow block"
+                                        >
                                             <p className="text-xs text-gray-600 dark:text-gray-400">Influence</p>
                                             <input
                                                 type="range"
@@ -301,7 +322,7 @@ export const RenderMainScreen: React.FC<RenderMainScreenProps> = (props) => {
                                                 className="w-full h-1 rounded-lg appearance-none cursor-pointer range-sm"
                                                 aria-label="Style influence"
                                             />
-                                        </div>
+                                        </TooltipWrapper>
                                         <span className="font-mono bg-white dark:bg-gray-900/50 border border-gray-200 dark:border-gray-600 px-2 py-0.5 rounded-md text-sm text-gray-800 dark:text-gray-200 w-12 text-center">
                                             {(file.weight ?? 1.0).toFixed(1)}
                                         </span>

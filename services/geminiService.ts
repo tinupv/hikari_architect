@@ -64,11 +64,19 @@ export const generate3dRender = async (plan: {base64: string; mimeType: string;}
     throw new Error("The model did not return any content. The request may have been blocked or the input was invalid.");
   }
 
-  const firstPart = response.candidates[0]?.content?.parts[0];
-  if (firstPart && firstPart.inlineData) {
-    return `data:${firstPart.inlineData.mimeType};base64,${firstPart.inlineData.data}`;
+  const imagePart = response.candidates[0]?.content?.parts?.find(part => part.inlineData);
+
+  if (imagePart && imagePart.inlineData) {
+    return `data:${imagePart.inlineData.mimeType};base64,${imagePart.inlineData.data}`;
   }
   
+  // Fix: Renamed 'textPart' to 'responseTextPart' to avoid redeclaration.
+  const responseTextPart = response.candidates[0]?.content?.parts?.find(part => part.text);
+  if (responseTextPart && responseTextPart.text) {
+      console.error("Model returned text instead of an image for 3D render:", responseTextPart.text);
+      throw new Error(`Render failed. The AI responded with text: "${responseTextPart.text.substring(0, 150)}..."`);
+  }
+
   throw new Error("Could not generate 3D render. The model returned content but it was not a valid image.");
 };
 
@@ -97,9 +105,17 @@ export const editImage = async (image: {base64: string; mimeType: string;}, prom
         throw new Error("The model did not return any content for enhancement. The request may have been blocked or the input was invalid.");
     }
 
-    const firstPart = response.candidates[0]?.content?.parts[0];
-    if (firstPart && firstPart.inlineData) {
-        return `data:${firstPart.inlineData.mimeType};base64,${firstPart.inlineData.data}`;
+    // Fix: Renamed 'imagePart' to 'responseImagePart' to avoid redeclaration.
+    const responseImagePart = response.candidates[0]?.content?.parts?.find(part => part.inlineData);
+
+    if (responseImagePart && responseImagePart.inlineData) {
+        return `data:${responseImagePart.inlineData.mimeType};base64,${responseImagePart.inlineData.data}`;
+    }
+
+    const textPart = response.candidates[0]?.content?.parts?.find(part => part.text);
+    if (textPart && textPart.text) {
+        console.error("Model returned text instead of an image for image edit:", textPart.text);
+        throw new Error(`Edit failed. The AI responded with text: "${textPart.text.substring(0, 150)}..."`);
     }
 
     throw new Error("Could not edit image. The model returned content but it was not a valid image.");

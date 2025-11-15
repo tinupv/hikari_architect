@@ -7,7 +7,7 @@ export interface Settings {
   denoising: number;
 }
 
-export type Screen = 'welcome' | 'renderUpload' | 'renderMain' | 'animate' | 'imageGeneration';
+export type Screen = 'welcome' | 'renderUpload' | 'renderMain' | 'animate' | 'imageGeneration' | 'login';
 
 export interface ImageFile {
   file: File;

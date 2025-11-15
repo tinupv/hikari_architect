@@ -115,9 +115,10 @@ export const ImageGenerationScreen: React.FC<ImageGenerationScreenProps> = (prop
                                             transition={{ duration: 0.3, delay: index * 0.1 }}
                                         >
                                             <img src={imgSrc} alt={`Generated image ${index + 1}`} className="w-full h-full object-contain" />
-                                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                            <div className="absolute inset-0 bg-black/50 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                                                 <a href={imgSrc} download={`hikari-image-${index + 1}.png`}>
-                                                    <ActionButton icon={<DownloadIcon className="w-5 h-5" />} label="Download" />
+                                                    {/* FIX: Added onClick prop to satisfy ActionButton's required props. The anchor tag will handle the download. */}
+                                                    <ActionButton onClick={() => {}} icon={<DownloadIcon className="w-5 h-5" />} label="Download" />
                                                 </a>
                                             </div>
                                         </motion.div>

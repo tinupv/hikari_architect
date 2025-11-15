@@ -128,7 +128,8 @@ export const AnimateScreen: React.FC<AnimateScreenProps> = (props) => {
                     <div className="mt-4 flex justify-end">
                         <TooltipWrapper tooltipText="Saves the generated video to your device as an MP4 file.">
                              <a href={props.videoResult} download="hikari-video.mp4">
-                                <ActionButton disabled={props.isLoading} icon={<DownloadIcon className="w-5 h-5" />} label="Download Video" />
+                                {/* FIX: Added onClick prop to satisfy ActionButton's required props. The anchor tag will handle the download. */}
+                                <ActionButton onClick={() => {}} disabled={props.isLoading} icon={<DownloadIcon className="w-5 h-5" />} label="Download Video" />
                             </a>
                         </TooltipWrapper>
                     </div>

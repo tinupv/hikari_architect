@@ -219,8 +219,9 @@ export const Slider: React.FC<{value: number, onChange: (e: React.ChangeEvent<HT
     </div>
 );
 
-export const ActionButton: React.FC<{ onClick: () => void, disabled?: boolean, icon?: React.ReactNode, label: string, className?: string}> = ({ onClick, disabled, icon, label, className }) => (
+export const ActionButton: React.FC<{ onClick?: () => void, type?: 'button' | 'submit' | 'reset', disabled?: boolean, icon?: React.ReactNode, label: string, className?: string}> = ({ onClick, type = 'button', disabled, icon, label, className }) => (
     <button
+        type={type}
         onClick={onClick}
         disabled={disabled}
         className={`inline-flex items-center justify-center px-4 py-2 bg-teal-500 text-white font-semibold rounded-lg shadow-md hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-900 focus:ring-teal-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400 dark:disabled:bg-gray-600 active:scale-[0.98] active:shadow-inner ${className}`}
@@ -257,6 +258,13 @@ export const RatioButton: React.FC<{label: string, value: string, selected: stri
 
 export const Spinner: React.FC = () => (
     <svg className="animate-spin -ml-1 mr-3 h-8 w-8 text-teal-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+);
+
+export const ButtonSpinner: React.FC = () => (
+    <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
     </svg>

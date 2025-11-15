@@ -1,12 +1,15 @@
+
 import React, { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { generate3dRender, editImage, generateVideo, generateImages } from './services/geminiService';
 import { fileToBase64 } from './utils/fileUtils';
 import type { Settings, Screen, ImageFile, BatchJob } from './types';
-import { HomeIcon } from './components/icons';
+import { HomeIcon, LogoutIcon } from './components/icons';
 import { Logo } from './components/logo';
 import { ThemeToggle } from './components/ThemeToggle';
+import { IconButton } from './components/ui';
 
+import { LoginScreen } from './screens/LoginScreen';
 import { WelcomeScreen } from './screens/WelcomeScreen';
 import { RenderUploadScreen } from './screens/RenderUploadScreen';
 import { RenderMainScreen } from './screens/RenderMainScreen';
@@ -35,8 +38,8 @@ const App: React.FC = () => {
         },
     };
 
-    const [showWelcome, setShowWelcome] = useState(true);
-    const [screen, setScreen] = useState<Screen>('welcome');
+    const [showSplash, setShowSplash] = useState(true);
+    const [screen, setScreen] = useState<Screen>('login');
 
     const [planFile, setPlanFile] = useState<ImageFile | null>(null);
     const [styleFiles, setStyleFiles] = useState<ImageFile[]>([]);
@@ -74,7 +77,7 @@ const App: React.FC = () => {
     
     useEffect(() => {
         const timer = setTimeout(() => {
-            setShowWelcome(false);
+            setShowSplash(false);
         }, 4000); // Increased duration to accommodate new animation
         return () => clearTimeout(timer);
     }, []);
@@ -428,7 +431,7 @@ const App: React.FC = () => {
     }
 
     const navigate = (newScreen: Screen) => {
-        if (newScreen === 'welcome') {
+        if (newScreen === 'welcome' || newScreen === 'login') {
             resetRenderState();
             resetAnimateState();
             resetImageGenState();
@@ -464,6 +467,8 @@ const App: React.FC = () => {
 
     const renderScreen = () => {
         switch(screen) {
+            case 'login':
+                return <LoginScreen key="login" onNavigate={navigate} />;
             case 'welcome':
                 return <WelcomeScreen key="welcome" onNavigate={navigate} />;
             case 'renderUpload':
@@ -543,14 +548,14 @@ const App: React.FC = () => {
                     imageResults={imageResults}
                 />;
             default:
-                return <WelcomeScreen key="default" onNavigate={navigate} />;
+                return <LoginScreen key="default" onNavigate={navigate} />;
         }
     }
 
     return (
         <div className="min-h-screen font-sans text-gray-800 dark:text-gray-300 flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
             <AnimatePresence>
-                {showWelcome && (
+                {showSplash && (
                     <motion.div
                         key="splash"
                         initial={{ opacity: 1 }}
@@ -582,7 +587,7 @@ const App: React.FC = () => {
             </AnimatePresence>
             
             <AnimatePresence>
-            {!showWelcome && (
+            {!showSplash && (
                 <motion.div 
                     className="flex flex-col flex-grow"
                     initial={{ opacity: 0 }}
@@ -592,20 +597,27 @@ const App: React.FC = () => {
                     <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-700 sticky top-0 z-20">
                         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                             <div className="flex items-center justify-between h-16">
-                                <div className="flex items-center space-x-3 cursor-pointer" onClick={() => navigate('welcome')}>
+                                <div className="flex items-center space-x-3 cursor-pointer" onClick={() => screen !== 'login' && navigate('welcome')}>
                                     <Logo className="h-8 w-8 text-teal-500" />
                                     <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200 tracking-tight">HIKARI RENDER STUDIO</h1>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <ThemeToggle />
-                                    {screen !== 'welcome' && (
-                                        <button
-                                            onClick={() => navigate('welcome')}
-                                            aria-label="Go to welcome screen"
-                                            className="p-2 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 hover:text-gray-800 dark:hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 dark:focus:ring-offset-gray-800 focus:ring-teal-400 transition-colors duration-200"
-                                        >
-                                            <HomeIcon className="w-5 h-5" />
-                                        </button>
+                                    {screen !== 'welcome' && screen !== 'login' && (
+                                        <>
+                                            <IconButton
+                                                onClick={() => navigate('welcome')}
+                                                aria-label="Go to welcome screen"
+                                            >
+                                                <HomeIcon className="w-5 h-5" />
+                                            </IconButton>
+                                            <IconButton
+                                                onClick={() => navigate('login')}
+                                                aria-label="Logout"
+                                            >
+                                                <LogoutIcon className="w-5 h-5" />
+                                            </IconButton>
+                                        </>
                                     )}
                                 </div>
                             </div>
@@ -617,6 +629,10 @@ const App: React.FC = () => {
                            {renderScreen()}
                         </AnimatePresence>
                     </main>
+                    <footer className="w-full text-center py-4 px-4 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700/60">
+                        <p className="font-semibold">Developed by Tinu P Varghese</p>
+                        <p>+91 8136888656 &bull; <a href="mailto:tinupv@gmail.com" className="underline hover:text-teal-500 transition-colors">tinupv@gmail.com</a></p>
+                    </footer>
                 </motion.div>
             )}
             </AnimatePresence>
