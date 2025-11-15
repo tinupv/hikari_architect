@@ -1,0 +1,5 @@
+{
+  "name": "HIKARI AI Studio 2.0",
+  "description": "An AI-powered application to transform 2D architectural plans into photorealistic 3D renders, edit images with text prompts, and generate videos from photos using Gemini.",
+  "requestFramePermissions": []
+}
